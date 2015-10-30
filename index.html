@@ -2,7 +2,7 @@
 <html>
   <head>
    <meta charset="UTF-8">
-    <title>Graphics Project - Car Game</title>
+    <title>Graphics Project</title>
 
     <style type="text/css">
       body {
@@ -11,7 +11,7 @@
       }
       canvas{
          
-            
+            background-image: url(images/background.png);
         }
     </style>
   </head>
@@ -25,7 +25,65 @@
       // Set the canvas up for drawing in 2D.
       var ctx = canvas.getContext("2d"); 
         
-       
+      
+        var redCarUpImage = new Image();
+      
+        redCarUpImage.onload = function () {
+	       redCarUpImage.active=true;
+        }
+        
+        redCarUpImage.src = "images/redcarup.png";
+ 
+        var redCar = {
+            "x": 325,
+            "y": 195
+        }
+            
+        var drawRed = function(xpos,ypos){
+            
+            if(redCarUpImage.active==true){
+                ctx.drawImage(redCarUpImage, xpos, ypos);
+            }
+        }     
+        
+        window.addEventListener("keydown", function(event) { 
+
+              canvas.width=canvas.width;
+              canvas.height=canvas.height;
+
+              if(event.keyCode==40) { //down
+                    
+                    redCar.y++;
+                    redCarDownImage.active=true;
+                    redCarUpImage.active=false;
+                    console.log(redCarDownImage.active);
+                    console.log(redCarUpImage.active);
+              }
+              else if(event.keyCode==38){//up
+                  
+                  redCar.y--;
+                  
+              }
+              else if(event.keyCode==39){//right
+
+                 redCar.x++;
+              }
+              else if(event.keyCode==37){//left
+                  redCar.x--;
+              }
+
+        });//event listener
+        
+        
+  var step = function(){
+      
+      
+      drawRed(redCar.x, redCar.y);
+       window.requestAnimationFrame(step);
+  }
+  
+  step();
+
     </script>
   </body>
 </html>
