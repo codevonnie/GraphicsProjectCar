@@ -27,6 +27,8 @@
         
         var redCarDownImage, redCarUpImage, redCarLeftImage, redCarRightImage;
         var blueCarDownImage, blueCarUpImage, blueCarLeftImage, blueCarRightImage;
+        var startGame, gameOver, stopAni;
+        var laps, blueLaps;
         
         var init = function(){
             
@@ -42,11 +44,14 @@
             blueCarUpImage.src = "images/bluecarup.png";
             blueCarDownImage = new Image();
             blueCarDownImage.src = "images/bluecardown.png";
-            
             blueCarLeftImage = new Image();
             blueCarLeftImage.src = "images/bluecarleft.png";
             blueCarRightImage = new Image();
             blueCarRightImage.src = "images/bluecarright.png";
+            startGame=false;
+            stopAni=false;
+            laps=0;
+            blueLaps=0;
             
         }
         
@@ -59,13 +64,12 @@
         redCarDownImage.onload = function () {
 	       redCarDownImage.active=false;
         }   
-        redCarLeftImage.onload = function () {
-	       redCarLeftImage.active=false;
-        }
         redCarRightImage.onload = function () {
 	       redCarRightImage.active=false;
         }
-        
+        redCarLeftImage.onload = function () {
+	       redCarLeftImage.active=false;
+        }
         blueCarUpImage.onload = function () {
 	       blueCarUpImage.active=false;
         }
@@ -91,9 +95,17 @@
         }
         
         //draw car image depending on faced direction
-        var drawCar = function(redXPos,redYPos, blueXPos, blueYPos){
+        var draw = function(redXPos,redYPos, blueXPos, blueYPos){
             
+            //clear the canvas before each draw 
             canvas.width=canvas.width;
+            
+            //lap count text
+            ctx.fillStyle = "rgb(250, 250, 250)";
+	        ctx.font = "24px Helvetica";
+	        ctx.textAlign = "left";
+	        ctx.textBaseline = "top";
+	        ctx.fillText("Laps: " + laps, 10, 6);
             
             if(redCarUpImage.active==true){
                 ctx.drawImage(redCarUpImage, redXPos, redYPos);
@@ -125,67 +137,143 @@
         //car movement dependent on location on the track
         var driveRed = function(){
             
-            //all allowed down movements
-            if((redCarDownImage.active==true)&&(redCar.y<canvas.height-50)){
-                
-                if(((redCar.x<108)||(redCar.x>573))&&(redCar.y<200)){
-                    redCar.y+=5;
-                    console.log("cond1");
-                }
-                else if(((redCar.x<223)&&(redCar.x>118))&&((redCar.y<310)&&(redCar.y>168))){
-                    redCar.y+=5;
-                    console.log("cond2");
-                }
-                else if(((redCar.x>588)&&(redCar.x<668))&&((redCar.y>280)&&(redCar.y<433))){
-                    redCar.y+=5;
-                    console.log("cond3");
-                }
-                
-            }
-            //all allowed up movements
-            else if((redCarUpImage.active==true)&&(redCar.y>40)){
-                
-                if((redCar.x>3)&&(redCar.x<93)){
-                    redCar.y-=5;
-                }
-            }
-            //all allowed right movements
-            else if((redCarRightImage.active==true)&&(redCar.x<canvas.width-35)){
-                
-                if((redCar.y>33)&&(redCar.y<95)&&(redCar.x>3)){
-                     redCar.x+=5;
-                }
-                
-                else if(((redCar.y>273)&&(redCar.y<343))&&(redCar.x<648)){
-                    redCar.x+=5;
-                }
-            }
+            if(startGame==true){
             
-            //all allowed left movements
-            else if((redCarLeftImage.active==true)&&(redCar.x>4)){
-                
-                if(((redCar.y>153)&&(redCar.y<218)&&(redCar.x<669)&&(redCar.x>128))){
-                     redCar.x-=5;
+                //all allowed down movements
+                if((redCarDownImage.active==true)&&(redCar.y<canvas.height-50)){
+
+                    if(((redCar.x<108)||(redCar.x>573))&&(redCar.y<200)){
+                        redCar.y+=5;
+                    }
+                    else if(((redCar.x<223)&&(redCar.x>118))&&((redCar.y<310)&&(redCar.y>168))){
+                        redCar.y+=5;
+                    }
+                    else if(((redCar.x>588)&&(redCar.x<668))&&((redCar.y>280)&&(redCar.y<433))){
+                        redCar.y+=5;
+                    }
+
                 }
-                
-                else if(((redCar.y>393)&&(redCar.y<453))&&((redCar.x<668)&&(redCar.x>23))){
-                    redCar.x-=5;
+                //all allowed up movements
+                else if((redCarUpImage.active==true)&&(redCar.y>40)){
+
+                    if((redCar.x>3)&&(redCar.x<93)){
+                        redCar.y-=5;
+                    }
+                }
+                //all allowed right movements
+                else if((redCarRightImage.active==true)&&(redCar.x<canvas.width-35)){
+
+                    if((redCar.y>33)&&(redCar.y<95)&&(redCar.x>3)){
+                         redCar.x+=5;
+                    }
+
+                    else if(((redCar.y>273)&&(redCar.y<343))&&(redCar.x<648)){
+                        redCar.x+=5;
+                    }
+                }
+
+                //all allowed left movements
+                else if((redCarLeftImage.active==true)&&(redCar.x>4)){
+
+                    if(((redCar.y>153)&&(redCar.y<218)&&(redCar.x<669)&&(redCar.x>128))){
+                         redCar.x-=5;
+                    }
+
+                    else if(((redCar.y>393)&&(redCar.y<453))&&((redCar.x<668)&&(redCar.x>23))){
+                        redCar.x-=5;
+                    }
                 }
             }
             
         }//driveRed
+        
+        var driveBlue = function(){
+            
+           if(startGame==true){ 
+            
+                if((blueCar.y>38)&&(blueCar.y<90)&&((blueCar.x>3)&&(blueCar.x<650))){
+                    blueCarRightImage.active=true;
+                    blueCarDownImage.active=false;
+                    blueCarLeftImage.active=false;
+                    blueCarUpImage.active=false;
+                    blueCar.x+=5;
+                }//first right track
+               
+                if(((blueCar.y>38)&&(blueCar.y<203))&&((blueCar.x<650)&&(blueCar.x>580))){
+                    blueCarRightImage.active=false;
+                    blueCarDownImage.active=true;
+                    blueCarLeftImage.active=false;
+                    blueCarUpImage.active=false;
+                    blueCar.y+=5;
+                    
+                }//first down track
+
+                if(((blueCar.y>163)&&(blueCar.y<210))&&((blueCar.x<640)&&(blueCar.x>126))){
+                    blueCarRightImage.active=false;
+                    blueCarDownImage.active=false;
+                    blueCarLeftImage.active=true;
+                    blueCarUpImage.active=false;
+                    blueCar.x-=5;
+                }//first left track
+               
+                if(((blueCar.y>160)&&(blueCar.y<313))&&((blueCar.x<205)&&(blueCar.x>120))){
+                    blueCarRightImage.active=false;
+                    blueCarDownImage.active=true;
+                    blueCarLeftImage.active=false;
+                    blueCarUpImage.active=false;
+                    blueCar.y+=5;
+                }//second down track
+               
+               if(((blueCar.y>310)&&(blueCar.y<328))&&((blueCar.x<648)&&(blueCar.x>150))){
+                   blueCarRightImage.active=true;
+                    blueCarDownImage.active=false;
+                    blueCarLeftImage.active=false;
+                    blueCarUpImage.active=false; 
+                   blueCar.x+=5;
+                }//second right track
+               
+               if(((blueCar.y>312)&&(blueCar.y<433))&&((blueCar.x<648)&&(blueCar.x>600))){
+                   blueCarRightImage.active=false;
+                    blueCarDownImage.active=true;
+                    blueCarLeftImage.active=false;
+                    blueCarUpImage.active=false;
+                   blueCar.y+=5;
+               }//third down track
+               
+               if(((blueCar.y>428)&&(blueCar.y<435))&&((blueCar.x<648)&&(blueCar.x>23))){
+                   blueCarRightImage.active=false;
+                    blueCarDownImage.active=false;
+                    blueCarLeftImage.active=true;
+                    blueCarUpImage.active=false;
+                   blueCar.x-=5;
+               }//second left track
+               
+               if(((blueCar.y>38)&&(blueCar.y<434))&&((blueCar.x<75)&&(blueCar.x>8))){
+                   blueCarRightImage.active=false;
+                    blueCarDownImage.active=false;
+                    blueCarLeftImage.active=false;
+                    blueCarUpImage.active=true;
+                   blueCar.y-=5;
+               }//up track
+               
+           }
+        }
         
         //event listener reacts to arrow keypress and changes image of car according to direction
         //and moves
         window.addEventListener("keydown", function(event) { 
             // Just log the event to the console.
 
-              canvas.width=canvas.width;
-              canvas.height=canvas.height;
+              //canvas.width=canvas.width;
+              //canvas.height=canvas.height;
+            
+              if(event.keyCode==32){ //spacebar toggles startGame value between true and false to pause
+                startGame^=true;
+              }
 
               if(event.keyCode==40) { //down
                     
-                  //redCar.y+=5;
+                  redCar.y+=5;
                   redCarDownImage.active=true;
                   redCarUpImage.active=false;
                   redCarRightImage.active=false;
@@ -194,7 +282,7 @@
               }
               else if(event.keyCode==38){//up
                   
-                 // redCar.y-=5;
+                  redCar.y-=5;
                   redCarUpImage.active=true;
                   redCarDownImage.active=false;
                   redCarRightImage.active=false;
@@ -203,7 +291,7 @@
               }
               else if(event.keyCode==39){//right
 
-                 // redCar.x+=5;
+                  redCar.x+=5;
                   redCarRightImage.active=true;
                   redCarUpImage.active=false;
                   redCarDownImage.active=false;
@@ -211,7 +299,7 @@
                   
               }
               else if(event.keyCode==37){//left
-                  //redCar.x-=5;
+                  redCar.x-=5;
                   redCarLeftImage.active=true;
                   redCarRightImage.active=false;
                   redCarUpImage.active=false;
@@ -220,14 +308,59 @@
  
         });//event listener
         
+        var lapCount = function(){
+            
+            if(startGame==true){
+                if((redCar.x==113)&&((redCar.y>28)&&(redCar.y<105))){
+                    laps++;
+                }
+            } 
+            
+            if((blueCar.x==113)&&((blueCar.y>28)&&(blueCar.y<105))){
+                    blueLaps++;
+                }
+             
+            if(laps==3){
+                startGame=false;
+                stopAni=true;
+                                
+                //lap count text
+                ctx.fillStyle = "rgb(250, 250, 250)";
+                ctx.font = "24px Helvetica";
+                ctx.textAlign = "left";
+                ctx.textBaseline = "top";
+                ctx.fillText("You Win!: ", canvas.width/2, canvas.height/2);
+            }
+            
+            else if(blueLaps==3){
+                startGame=false;
+                stopAni=true;
+                                
+                //lap count text
+                ctx.fillStyle = "rgb(250, 250, 250)";
+                ctx.font = "50px Helvetica";
+                ctx.textAlign = "left";
+                ctx.textBaseline = "top";
+                ctx.fillText("Blue Car Wins !", 200, canvas.height/2);
+            }
+            
+            
+        }
+        
         
   var step = function(){
-      
-      
-      drawCar(redCar.x, redCar.y, blueCar.x, blueCar.y);
+        
+      draw(redCar.x, redCar.y, blueCar.x, blueCar.y);
       driveRed();
-      window.requestAnimationFrame(step);
+      driveBlue();
+      lapCount();
+      
+      if(stopAni==false){
+        window.requestAnimationFrame(step);
+      }
   }
+  
+  
   
   step();
 
