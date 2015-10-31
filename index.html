@@ -26,6 +26,7 @@
       var ctx = canvas.getContext("2d");
         
         var redCarDownImage, redCarUpImage, redCarLeftImage, redCarRightImage;
+        var blueCarDownImage, blueCarUpImage, blueCarLeftImage, blueCarRightImage;
         
         var init = function(){
             
@@ -37,77 +38,142 @@
             redCarRightImage.src = "images/redcarright.png";
             redCarLeftImage = new Image();
             redCarLeftImage.src = "images/redcarleft.png";
+            blueCarUpImage = new Image();
+            blueCarUpImage.src = "images/bluecarup.png";
+            blueCarDownImage = new Image();
+            blueCarDownImage.src = "images/bluecardown.png";
+            
+            blueCarLeftImage = new Image();
+            blueCarLeftImage.src = "images/bluecarleft.png";
+            blueCarRightImage = new Image();
+            blueCarRightImage.src = "images/bluecarright.png";
             
         }
         
         init();
         
         //load car images
-        
         redCarUpImage.onload = function () {
 	       redCarUpImage.active=false;
         }
         redCarDownImage.onload = function () {
 	       redCarDownImage.active=false;
         }   
-        redCarRightImage.onload = function () {
-	       redCarRightImage.active=true;
-        }
         redCarLeftImage.onload = function () {
 	       redCarLeftImage.active=false;
         }
+        redCarRightImage.onload = function () {
+	       redCarRightImage.active=false;
+        }
+        
+        blueCarUpImage.onload = function () {
+	       blueCarUpImage.active=false;
+        }
+        blueCarDownImage.onload = function () {
+	       blueCarDownImage.active=false;
+        }   
+        blueCarRightImage.onload = function () {
+	       blueCarRightImage.active=false;
+        }
+        blueCarLeftImage.onload = function () {
+	       blueCarLeftImage.active=false;
+        }
   
+        //car obj coordinates
         var redCar = {
             "x": 148,
             "y": 88
         }
         
+        var blueCar = {
+            "x": 148,
+            "y": 48
+        }
+        
         //draw car image depending on faced direction
-        var drawRed = function(xpos,ypos){
+        var drawCar = function(redXPos,redYPos, blueXPos, blueYPos){
             
             canvas.width=canvas.width;
             
             if(redCarUpImage.active==true){
-                ctx.drawImage(redCarUpImage, xpos, ypos);
+                ctx.drawImage(redCarUpImage, redXPos, redYPos);
             }
             else if(redCarDownImage.active==true){
-                ctx.drawImage(redCarDownImage, xpos, ypos);
+                ctx.drawImage(redCarDownImage, redXPos, redYPos);
             }
-            else if(redCarRightImage.active==true){
-                ctx.drawImage(redCarRightImage, xpos, ypos);
+            else if(redCarLeftImage.active==true){
+                ctx.drawImage(redCarLeftImage, redXPos, redYPos);
             }
             else{
-                ctx.drawImage(redCarLeftImage, xpos, ypos);
+                ctx.drawImage(redCarRightImage, redXPos, redYPos);
+            }
+            
+            if(blueCarUpImage.active==true){
+                ctx.drawImage(blueCarUpImage, blueXPos, blueYPos);
+            }
+            else if(blueCarDownImage.active==true){
+                ctx.drawImage(blueCarDownImage, blueXPos, blueYPos);
+            }
+            else if(redCarLeftImage.active==true){
+                ctx.drawImage(blueCarLeftImage, blueXPos, blueYPos);
+            }
+            else{
+                ctx.drawImage(blueCarRightImage, blueXPos, blueYPos);
             }
             
         }
-        
+        //car movement dependent on location on the track
         var driveRed = function(){
             
-            if((redCarDownImage.active==true)&&(redCar.y<canvas.height-40)){
+            //all allowed down movements
+            if((redCarDownImage.active==true)&&(redCar.y<canvas.height-50)){
                 
-                if(((redCar.x<108)||(redCar.x>573))&&(redCar.y<216)){
+                if(((redCar.x<108)||(redCar.x>573))&&(redCar.y<200)){
                     redCar.y+=5;
                     console.log("cond1");
                 }
-                else if(((redCar.x<223)&&(redCar.x>118))&&((redCar.y<340)&&(redCar.y>168))){
+                else if(((redCar.x<223)&&(redCar.x>118))&&((redCar.y<310)&&(redCar.y>168))){
                     redCar.y+=5;
                     console.log("cond2");
                 }
-                else if(((redCar.x>588)&&(redCar.x<668))&&((redCar.y>280))){
+                else if(((redCar.x>588)&&(redCar.x<668))&&((redCar.y>280)&&(redCar.y<433))){
                     redCar.y+=5;
                     console.log("cond3");
                 }
                 
             }
-            
-            else if((redCarUpImage.active==true)&&(redCar.y>35)){
+            //all allowed up movements
+            else if((redCarUpImage.active==true)&&(redCar.y>40)){
                 
                 if((redCar.x>3)&&(redCar.x<93)){
                     redCar.y-=5;
                 }
             }
-        }
+            //all allowed right movements
+            else if((redCarRightImage.active==true)&&(redCar.x<canvas.width-35)){
+                
+                if((redCar.y>33)&&(redCar.y<95)&&(redCar.x>3)){
+                     redCar.x+=5;
+                }
+                
+                else if(((redCar.y>273)&&(redCar.y<343))&&(redCar.x<648)){
+                    redCar.x+=5;
+                }
+            }
+            
+            //all allowed left movements
+            else if((redCarLeftImage.active==true)&&(redCar.x>4)){
+                
+                if(((redCar.y>153)&&(redCar.y<218)&&(redCar.x<669)&&(redCar.x>128))){
+                     redCar.x-=5;
+                }
+                
+                else if(((redCar.y>393)&&(redCar.y<453))&&((redCar.x<668)&&(redCar.x>23))){
+                    redCar.x-=5;
+                }
+            }
+            
+        }//driveRed
         
         //event listener reacts to arrow keypress and changes image of car according to direction
         //and moves
@@ -119,6 +185,7 @@
 
               if(event.keyCode==40) { //down
                     
+                  //redCar.y+=5;
                   redCarDownImage.active=true;
                   redCarUpImage.active=false;
                   redCarRightImage.active=false;
@@ -127,7 +194,7 @@
               }
               else if(event.keyCode==38){//up
                   
-                  redCar.y-=5;
+                 // redCar.y-=5;
                   redCarUpImage.active=true;
                   redCarDownImage.active=false;
                   redCarRightImage.active=false;
@@ -136,7 +203,7 @@
               }
               else if(event.keyCode==39){//right
 
-                  redCar.x+=5;
+                 // redCar.x+=5;
                   redCarRightImage.active=true;
                   redCarUpImage.active=false;
                   redCarDownImage.active=false;
@@ -144,7 +211,7 @@
                   
               }
               else if(event.keyCode==37){//left
-                  redCar.x-=5;
+                  //redCar.x-=5;
                   redCarLeftImage.active=true;
                   redCarRightImage.active=false;
                   redCarUpImage.active=false;
@@ -157,7 +224,7 @@
   var step = function(){
       
       
-      drawRed(redCar.x, redCar.y);
+      drawCar(redCar.x, redCar.y, blueCar.x, blueCar.y);
       driveRed();
       window.requestAnimationFrame(step);
   }
