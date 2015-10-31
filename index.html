@@ -23,55 +23,134 @@
         var canvas = document.getElementById("gamecanvas");
       
       // Set the canvas up for drawing in 2D.
-      var ctx = canvas.getContext("2d"); 
+      var ctx = canvas.getContext("2d");
         
-      
-        var redCarUpImage = new Image();
-      
-        redCarUpImage.onload = function () {
-	       redCarUpImage.active=true;
-        }
+        var redCarDownImage, redCarUpImage, redCarLeftImage, redCarRightImage;
         
-        redCarUpImage.src = "images/redcarup.png";
- 
-        var redCar = {
-            "x": 325,
-            "y": 195
-        }
+        var init = function(){
             
+            redCarUpImage = new Image();
+            redCarUpImage.src = "images/redcarup.png";
+            redCarDownImage = new Image();
+            redCarDownImage.src = "images/redcardown.png";
+            redCarRightImage = new Image();
+            redCarRightImage.src = "images/redcarright.png";
+            redCarLeftImage = new Image();
+            redCarLeftImage.src = "images/redcarleft.png";
+            
+        }
+        
+        init();
+        
+        //load car images
+        
+        redCarUpImage.onload = function () {
+	       redCarUpImage.active=false;
+        }
+        redCarDownImage.onload = function () {
+	       redCarDownImage.active=false;
+        }   
+        redCarRightImage.onload = function () {
+	       redCarRightImage.active=true;
+        }
+        redCarLeftImage.onload = function () {
+	       redCarLeftImage.active=false;
+        }
+  
+        var redCar = {
+            "x": 148,
+            "y": 88
+        }
+        
+        //draw car image depending on faced direction
         var drawRed = function(xpos,ypos){
+            
+            canvas.width=canvas.width;
             
             if(redCarUpImage.active==true){
                 ctx.drawImage(redCarUpImage, xpos, ypos);
             }
-        }     
+            else if(redCarDownImage.active==true){
+                ctx.drawImage(redCarDownImage, xpos, ypos);
+            }
+            else if(redCarRightImage.active==true){
+                ctx.drawImage(redCarRightImage, xpos, ypos);
+            }
+            else{
+                ctx.drawImage(redCarLeftImage, xpos, ypos);
+            }
+            
+        }
         
+        var driveRed = function(){
+            
+            if((redCarDownImage.active==true)&&(redCar.y<canvas.height-40)){
+                
+                if(((redCar.x<108)||(redCar.x>573))&&(redCar.y<216)){
+                    redCar.y+=5;
+                    console.log("cond1");
+                }
+                else if(((redCar.x<223)&&(redCar.x>118))&&((redCar.y<340)&&(redCar.y>168))){
+                    redCar.y+=5;
+                    console.log("cond2");
+                }
+                else if(((redCar.x>588)&&(redCar.x<668))&&((redCar.y>280))){
+                    redCar.y+=5;
+                    console.log("cond3");
+                }
+                
+            }
+            
+            else if((redCarUpImage.active==true)&&(redCar.y>35)){
+                
+                if((redCar.x>3)&&(redCar.x<93)){
+                    redCar.y-=5;
+                }
+            }
+        }
+        
+        //event listener reacts to arrow keypress and changes image of car according to direction
+        //and moves
         window.addEventListener("keydown", function(event) { 
+            // Just log the event to the console.
 
               canvas.width=canvas.width;
               canvas.height=canvas.height;
 
               if(event.keyCode==40) { //down
                     
-                    redCar.y++;
-                    redCarDownImage.active=true;
-                    redCarUpImage.active=false;
-                    console.log(redCarDownImage.active);
-                    console.log(redCarUpImage.active);
+                  redCarDownImage.active=true;
+                  redCarUpImage.active=false;
+                  redCarRightImage.active=false;
+                  redCarLeftImage.active=false;
+                  
               }
               else if(event.keyCode==38){//up
                   
-                  redCar.y--;
+                  redCar.y-=5;
+                  redCarUpImage.active=true;
+                  redCarDownImage.active=false;
+                  redCarRightImage.active=false;
+                  redCarLeftImage.active=false;
                   
               }
               else if(event.keyCode==39){//right
 
-                 redCar.x++;
+                  redCar.x+=5;
+                  redCarRightImage.active=true;
+                  redCarUpImage.active=false;
+                  redCarDownImage.active=false;
+                  redCarLeftImage.active=false;
+                  
               }
               else if(event.keyCode==37){//left
-                  redCar.x--;
+                  redCar.x-=5;
+                  redCarLeftImage.active=true;
+                  redCarRightImage.active=false;
+                  redCarUpImage.active=false;
+                  redCarDownImage.active=false;
               }
-
+ 
         });//event listener
         
         
@@ -79,7 +158,8 @@
       
       
       drawRed(redCar.x, redCar.y);
-       window.requestAnimationFrame(step);
+      driveRed();
+      window.requestAnimationFrame(step);
   }
   
   step();
