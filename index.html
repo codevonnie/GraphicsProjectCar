@@ -16,7 +16,7 @@
     </style>
   </head>
   <body>
-    <canvas id="gamecanvas" width="700" height="500"></canvas>
+    <canvas id="gamecanvas" width="700" height="560"></canvas>
     <script type="text/javascript">
         
         // Gets a handle to the element with id canvasOne.
@@ -29,7 +29,7 @@
         var blueCarDownImage, blueCarUpImage, blueCarLeftImage, blueCarRightImage;
         var startGame, gameOver, stopAni;
         var laps, blueLaps;
-        
+              
         var init = function(){
             
             redCarUpImage = new Image();
@@ -49,14 +49,15 @@
             blueCarRightImage = new Image();
             blueCarRightImage.src = "images/bluecarright.png";
             startGame=false;
-            stopAni=false;
+            gameOver=false;
             laps=0;
             blueLaps=0;
+            
             
         }
         
         init();
-        
+       
         //load car images
         redCarUpImage.onload = function () {
 	       redCarUpImage.active=false;
@@ -93,20 +94,14 @@
             "x": 148,
             "y": 48
         }
+  
         
         //draw car image depending on faced direction
         var draw = function(redXPos,redYPos, blueXPos, blueYPos){
             
             //clear the canvas before each draw 
             canvas.width=canvas.width;
-            
-            //lap count text
-            ctx.fillStyle = "rgb(250, 250, 250)";
-	        ctx.font = "24px Helvetica";
-	        ctx.textAlign = "left";
-	        ctx.textBaseline = "top";
-	        ctx.fillText("Laps: " + laps, 10, 6);
-            
+                        
             if(redCarUpImage.active==true){
                 ctx.drawImage(redCarUpImage, redXPos, redYPos);
             }
@@ -133,11 +128,20 @@
                 ctx.drawImage(blueCarRightImage, blueXPos, blueYPos);
             }
             
+            ctx.fillStyle = "rgb(250, 250, 250)";
+	        ctx.font = "24px Helvetica";
+	        ctx.textAlign = "left";
+	        ctx.textBaseline = "top";
+	        ctx.fillText("You control the red car", 20, canvas.height-75);
+            ctx.fillText("Use arrow keys to steer", 20, canvas.height-35);
+            ctx.fillText("3 lap race", 400, canvas.height-75);
+            ctx.fillText("Press spacebar to start", 400, canvas.height-35);
+            
         }
         //car movement dependent on location on the track
         var driveRed = function(){
             
-            if(startGame==true){
+            if((startGame==true)&&(gameOver==false)){
             
                 //all allowed down movements
                 if((redCarDownImage.active==true)&&(redCar.y<canvas.height-50)){
@@ -189,7 +193,7 @@
         
         var driveBlue = function(){
             
-           if(startGame==true){ 
+           if((startGame==true)&&(gameOver==false)){ 
             
                 if((blueCar.y>38)&&(blueCar.y<90)&&((blueCar.x>3)&&(blueCar.x<650))){
                     blueCarRightImage.active=true;
@@ -269,6 +273,8 @@
             
               if(event.keyCode==32){ //spacebar toggles startGame value between true and false to pause
                 startGame^=true;
+                redCarRightImage.active=true;
+                driveRed(); 
               }
 
               if(event.keyCode==40) { //down
@@ -310,31 +316,39 @@
         
         var lapCount = function(){
             
-            if(startGame==true){
-                if((redCar.x==113)&&((redCar.y>28)&&(redCar.y<105))){
-                    laps++;
-                }
-            } 
+                
+            if((redCar.x==113)&&((redCar.y>28)&&(redCar.y<105))){
+                laps++;
+            }
+            
+            //lap count text
+            ctx.fillStyle = "rgb(250, 250, 250)";
+	        ctx.font = "24px Helvetica";
+	        ctx.textAlign = "left";
+	        ctx.textBaseline = "top";
+	        ctx.fillText("Laps: " + laps + "/3", 10, 6);
+         
             
             if((blueCar.x==113)&&((blueCar.y>28)&&(blueCar.y<105))){
                     blueLaps++;
                 }
              
             if(laps==3){
-                startGame=false;
-                stopAni=true;
+                
                                 
                 //lap count text
                 ctx.fillStyle = "rgb(250, 250, 250)";
-                ctx.font = "24px Helvetica";
+                ctx.font = "50px Helvetica";
                 ctx.textAlign = "left";
                 ctx.textBaseline = "top";
                 ctx.fillText("You Win!: ", canvas.width/2, canvas.height/2);
+                
+                gameOver=true;
+
             }
             
             else if(blueLaps==3){
-                startGame=false;
-                stopAni=true;
+                
                                 
                 //lap count text
                 ctx.fillStyle = "rgb(250, 250, 250)";
@@ -342,6 +356,8 @@
                 ctx.textAlign = "left";
                 ctx.textBaseline = "top";
                 ctx.fillText("Blue Car Wins !", 200, canvas.height/2);
+                
+                gameOver=true;
             }
             
             
@@ -349,13 +365,13 @@
         
         
   var step = function(){
-        
+  
       draw(redCar.x, redCar.y, blueCar.x, blueCar.y);
       driveRed();
       driveBlue();
-      lapCount();
+      lapCount(); 
       
-      if(stopAni==false){
+      if(gameOver==false){
         window.requestAnimationFrame(step);
       }
   }
