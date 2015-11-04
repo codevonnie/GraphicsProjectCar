@@ -10,13 +10,30 @@
           
       }
       canvas{
-         
             background-image: url(images/background.png);
+            
         }
+        #buttons {
+        position: absolute;
+        top: 503px;
+        left: 310px;
+        
+      }
+      #buttons > input {
+        padding: 10px;
+        display: block;
+        margin-top: 5px;
+        font-family:sans-serif;
+        font-weight: bolder;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
     <canvas id="gamecanvas" width="700" height="560"></canvas>
+      <div id="buttons" >
+      <input type="button" id="reset" value="Restart" >
+    </div>
     <script type="text/javascript">
         
         // Gets a handle to the element with id canvasOne.
@@ -25,13 +42,17 @@
       // Set the canvas up for drawing in 2D.
       var ctx = canvas.getContext("2d");
         
+        //declared variables
         var redCarDownImage, redCarUpImage, redCarLeftImage, redCarRightImage;
         var blueCarDownImage, blueCarUpImage, blueCarLeftImage, blueCarRightImage;
         var startGame, gameOver, stopAni;
         var laps, blueLaps;
+        var redX, redY, blueX, blueY;
               
+        //function to initialize functions
         var init = function(){
             
+            //images for both cars are initialized
             redCarUpImage = new Image();
             redCarUpImage.src = "images/redcarup.png";
             redCarDownImage = new Image();
@@ -48,17 +69,19 @@
             blueCarLeftImage.src = "images/bluecarleft.png";
             blueCarRightImage = new Image();
             blueCarRightImage.src = "images/bluecarright.png";
+            
+            //variables to control game start and game over
             startGame=false;
             gameOver=false;
+            //count variables for number of laps of both cars
             laps=0;
             blueLaps=0;
-            
-            
+                
         }
-        
+        //call function to initialize variables
         init();
        
-        //load car images
+        //functions to load car images and set active properties
         redCarUpImage.onload = function () {
 	       redCarUpImage.active=false;
         }
@@ -83,51 +106,54 @@
         blueCarLeftImage.onload = function () {
 	       blueCarLeftImage.active=false;
         }
+    
   
-        //car obj coordinates
+        //red car obj coordinates
         var redCar = {
             "x": 148,
             "y": 88
         }
-        
+        //blue car obj coordinates
         var blueCar = {
             "x": 148,
             "y": 48
         }
   
         
-        //draw car image depending on faced direction
-        var draw = function(redXPos,redYPos, blueXPos, blueYPos){
+        //function takes arguements of the x and y coordinates of both cars for drawing
+        var draw = function(){
             
             //clear the canvas before each draw 
             canvas.width=canvas.width;
-                        
+            
+            //conditions to set which car sprite should be drawn on the canvas
             if(redCarUpImage.active==true){
-                ctx.drawImage(redCarUpImage, redXPos, redYPos);
+                ctx.drawImage(redCarUpImage, redCar.x, redCar.y);
             }
             else if(redCarDownImage.active==true){
-                ctx.drawImage(redCarDownImage, redXPos, redYPos);
+                ctx.drawImage(redCarDownImage, redCar.x, redCar.y);
             }
             else if(redCarLeftImage.active==true){
-                ctx.drawImage(redCarLeftImage, redXPos, redYPos);
+                ctx.drawImage(redCarLeftImage, redCar.x, redCar.y);
             }
             else{
-                ctx.drawImage(redCarRightImage, redXPos, redYPos);
+                ctx.drawImage(redCarRightImage, redCar.x, redCar.y);
             }
             
             if(blueCarUpImage.active==true){
-                ctx.drawImage(blueCarUpImage, blueXPos, blueYPos);
+                ctx.drawImage(blueCarUpImage, blueCar.x, blueCar.y);
             }
             else if(blueCarDownImage.active==true){
-                ctx.drawImage(blueCarDownImage, blueXPos, blueYPos);
+                ctx.drawImage(blueCarDownImage, blueCar.x, blueCar.y);
             }
             else if(redCarLeftImage.active==true){
-                ctx.drawImage(blueCarLeftImage, blueXPos, blueYPos);
+                ctx.drawImage(blueCarLeftImage, blueCar.x, blueCar.y);
             }
             else{
-                ctx.drawImage(blueCarRightImage, blueXPos, blueYPos);
+                ctx.drawImage(blueCarRightImage, blueCar.x, blueCar.y);
             }
             
+            //set text on screen to give instructions to player on how to play game
             ctx.fillStyle = "rgb(250, 250, 250)";
 	        ctx.font = "24px Helvetica";
 	        ctx.textAlign = "left";
@@ -140,10 +166,10 @@
         }
         //car movement dependent on location on the track
         var driveRed = function(){
-            
+            //if the player has pressed the spacebar to begin game and the game has not finished
             if((startGame==true)&&(gameOver==false)){
             
-                //all allowed down movements
+                //all allowed down movements based on where on the track the red car is located
                 if((redCarDownImage.active==true)&&(redCar.y<canvas.height-50)){
 
                     if(((redCar.x<108)||(redCar.x>573))&&(redCar.y<200)){
@@ -167,7 +193,7 @@
                 //all allowed right movements
                 else if((redCarRightImage.active==true)&&(redCar.x<canvas.width-35)){
 
-                    if((redCar.y>33)&&(redCar.y<95)&&(redCar.x>3)){
+                    if((redCar.y>33)&&(redCar.y<103)&&(redCar.x>3)){
                          redCar.x+=5;
                     }
 
@@ -192,16 +218,18 @@
         }//driveRed
         
         var driveBlue = function(){
-            
+            //if the player has pressed the spacebar to begin game and the game has not finished
            if((startGame==true)&&(gameOver==false)){ 
-            
-                if((blueCar.y>38)&&(blueCar.y<90)&&((blueCar.x>3)&&(blueCar.x<650))){
+               
+            //all allowed down movements based on where on the track the blue car is located and
+               //sets the correct car sprite based on direction the car is travelling
+                if((blueCar.y>33)&&(blueCar.y<90)&&((blueCar.x>3)&&(blueCar.x<650))){
                     blueCarRightImage.active=true;
                     blueCarDownImage.active=false;
                     blueCarLeftImage.active=false;
                     blueCarUpImage.active=false;
                     blueCar.x+=5;
-                }//first right track
+                }//first right track, blue car drives right
                
                 if(((blueCar.y>38)&&(blueCar.y<203))&&((blueCar.x<650)&&(blueCar.x>580))){
                     blueCarRightImage.active=false;
@@ -210,7 +238,7 @@
                     blueCarUpImage.active=false;
                     blueCar.y+=5;
                     
-                }//first down track
+                }//first down track, blue car drives down
 
                 if(((blueCar.y>163)&&(blueCar.y<210))&&((blueCar.x<640)&&(blueCar.x>126))){
                     blueCarRightImage.active=false;
@@ -218,7 +246,7 @@
                     blueCarLeftImage.active=true;
                     blueCarUpImage.active=false;
                     blueCar.x-=5;
-                }//first left track
+                }//first left track, blue car drives left
                
                 if(((blueCar.y>160)&&(blueCar.y<313))&&((blueCar.x<205)&&(blueCar.x>120))){
                     blueCarRightImage.active=false;
@@ -226,7 +254,7 @@
                     blueCarLeftImage.active=false;
                     blueCarUpImage.active=false;
                     blueCar.y+=5;
-                }//second down track
+                }//second down track, blue car drives down
                
                if(((blueCar.y>310)&&(blueCar.y<328))&&((blueCar.x<648)&&(blueCar.x>150))){
                    blueCarRightImage.active=true;
@@ -234,7 +262,7 @@
                     blueCarLeftImage.active=false;
                     blueCarUpImage.active=false; 
                    blueCar.x+=5;
-                }//second right track
+                }//second right track, blue car drives right
                
                if(((blueCar.y>312)&&(blueCar.y<433))&&((blueCar.x<648)&&(blueCar.x>600))){
                    blueCarRightImage.active=false;
@@ -242,7 +270,7 @@
                     blueCarLeftImage.active=false;
                     blueCarUpImage.active=false;
                    blueCar.y+=5;
-               }//third down track
+               }//third down track, blue car drives down
                
                if(((blueCar.y>428)&&(blueCar.y<435))&&((blueCar.x<648)&&(blueCar.x>23))){
                    blueCarRightImage.active=false;
@@ -250,7 +278,7 @@
                     blueCarLeftImage.active=true;
                     blueCarUpImage.active=false;
                    blueCar.x-=5;
-               }//second left track
+               }//second left track, blue car drives left
                
                if(((blueCar.y>38)&&(blueCar.y<434))&&((blueCar.x<75)&&(blueCar.x>8))){
                    blueCarRightImage.active=false;
@@ -258,54 +286,53 @@
                     blueCarLeftImage.active=false;
                     blueCarUpImage.active=true;
                    blueCar.y-=5;
-               }//up track
+               }//up track, blue car drives up
                
            }
         }
         
-        //event listener reacts to arrow keypress and changes image of car according to direction
-        //and moves
+        /*event listener reacts to arrow keypress and changes image of red car according to direction
+          and moves*/
         window.addEventListener("keydown", function(event) { 
-            // Just log the event to the console.
 
-              //canvas.width=canvas.width;
-              //canvas.height=canvas.height;
-            
-              if(event.keyCode==32){ //spacebar toggles startGame value between true and false to pause
-                startGame^=true;
+            //spacebar sets startGame value to true to kickstart game
+            if(event.keyCode==32){ 
+                startGame=true;
+                /*when game is started the red car begins to move automatically at 
+                  the same time as the blue car*/
                 redCarRightImage.active=true;
                 driveRed(); 
               }
-
+              //if player presses down arrow, load the sprite facing down
               if(event.keyCode==40) { //down
                     
-                  redCar.y+=5;
                   redCarDownImage.active=true;
                   redCarUpImage.active=false;
                   redCarRightImage.active=false;
                   redCarLeftImage.active=false;
                   
               }
+            //if player presses up arrow, load the sprite facing up
               else if(event.keyCode==38){//up
                   
-                  redCar.y-=5;
                   redCarUpImage.active=true;
                   redCarDownImage.active=false;
                   redCarRightImage.active=false;
                   redCarLeftImage.active=false;
                   
               }
+            //if player presses right arrow, load the sprite facing right
               else if(event.keyCode==39){//right
 
-                  redCar.x+=5;
                   redCarRightImage.active=true;
                   redCarUpImage.active=false;
                   redCarDownImage.active=false;
                   redCarLeftImage.active=false;
                   
               }
+            //if player presses left arrow, load the sprite facing left
               else if(event.keyCode==37){//left
-                  redCar.x-=5;
+
                   redCarLeftImage.active=true;
                   redCarRightImage.active=false;
                   redCarUpImage.active=false;
@@ -314,71 +341,88 @@
  
         });//event listener
         
+        //function to keep track of how many laps each car has driven and check for winner
         var lapCount = function(){
             
-                
+            //if the red car passes the finish line, increment the laps counter    
             if((redCar.x==113)&&((redCar.y>28)&&(redCar.y<105))){
                 laps++;
             }
+            //if the blue car passes the finish line, increment the blueLaps counter
+            if((blueCar.x==113)&&((blueCar.y>28)&&(blueCar.y<105))){
+                    blueLaps++;
+                }
             
-            //lap count text
+            //lap count text displayed on screen
             ctx.fillStyle = "rgb(250, 250, 250)";
 	        ctx.font = "24px Helvetica";
 	        ctx.textAlign = "left";
 	        ctx.textBaseline = "top";
 	        ctx.fillText("Laps: " + laps + "/3", 10, 6);
-         
-            
-            if((blueCar.x==113)&&((blueCar.y>28)&&(blueCar.y<105))){
-                    blueLaps++;
-                }
-             
+
+            //if red car laps is equal to 3 the red car has won the race and the game is over 
             if(laps==3){
                 
-                                
                 //lap count text
                 ctx.fillStyle = "rgb(250, 250, 250)";
                 ctx.font = "50px Helvetica";
                 ctx.textAlign = "left";
                 ctx.textBaseline = "top";
-                ctx.fillText("You Win!: ", canvas.width/2, canvas.height/2);
-                
+                ctx.fillText("You Win!", 250, canvas.height/2-10);
+                startGame=false;
                 gameOver=true;
 
             }
-            
+            //or if blue car laps is equal to 3 the blue car has won the race and the game is over 
             else if(blueLaps==3){
-                
                                 
                 //lap count text
                 ctx.fillStyle = "rgb(250, 250, 250)";
                 ctx.font = "50px Helvetica";
                 ctx.textAlign = "left";
                 ctx.textBaseline = "top";
-                ctx.fillText("Blue Car Wins !", 200, canvas.height/2);
-                
+                ctx.fillText("Blue Car Wins !", 210, canvas.height/2-10);
+                startGame=false;
                 gameOver=true;
             }
+        }//lapCount
+        
+        // event handler to check if reset button is pressed
+      document.getElementById('reset').addEventListener('click', function() {
+          reset();
+      }, false);
+        
+        /*if reset button is pressed, reload screen, call init function to reset variables and 
+           reset car buttons*/
+        var reset = function(){
             
-            
+            //init();
+            document.location.reload(); //reload the page
+//            redCar.x=148;
+//            redCar.y=88;
+//            blueCar.x=148;
+//            blueCar.y=48;
         }
         
-        
-  var step = function(){
-  
-      draw(redCar.x, redCar.y, blueCar.x, blueCar.y);
-      driveRed();
-      driveBlue();
-      lapCount(); 
-      
-      if(gameOver==false){
-        window.requestAnimationFrame(step);
+      //function to step through game animation        
+      var step = function(){
+          //call draw method and pass it the x and y coordinates of both cars
+          draw();
+          //call driveRed method to allow movement of red car
+          driveRed();
+          //call driveBlue method to start movement of blue car
+          driveBlue();
+          //check/add to the number of laps
+          lapCount(); 
+          //if the game is not over, animate game by recursively calling step function
+          if(gameOver==false){
+            window.requestAnimationFrame(step);
+          }
+          
+          
       }
-  }
-  
-  
-  
-  step();
+     //call step method to start off animation
+      step();
 
     </script>
   </body>
