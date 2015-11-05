@@ -20,4 +20,5 @@ and
 # Resources & References
 - Car sprites (amended for game): http://www.clipartbest.com/cliparts/RTG/y8n/RTGy8nrkc.png
 - Track image (amended): http://flashgames555.com/pictures/racing/Racing-Track.jpg
+- Sound effects: http://http://www.freesound.org/
 
