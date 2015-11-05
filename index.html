@@ -2,7 +2,7 @@
 <html>
   <head>
    <meta charset="UTF-8">
-    <title>Graphics Project</title>
+    <title>Rally Racer</title>
 
     <style type="text/css">
       body {
@@ -48,6 +48,7 @@
         var startGame, gameOver, stopAni;
         var laps, blueLaps;
         var redX, redY, blueX, blueY;
+        var tires, horn, lose, win, checkpoint; //soundfiles
               
         //function to initialize functions
         var init = function(){
@@ -69,7 +70,12 @@
             blueCarLeftImage.src = "images/bluecarleft.png";
             blueCarRightImage = new Image();
             blueCarRightImage.src = "images/bluecarright.png";
-            
+            //sounds inititalized
+            tires= new Audio("sounds/tires.wav");
+            horn = new Audio("sounds/horn.wav");
+            lose = new Audio("sounds/loseboo.mp3");
+            win = new Audio("sounds/wincheer.mp3");
+            checkpoint = new Audio("sounds/checkpoint.wav");
             //variables to control game start and game over
             startGame=false;
             gameOver=false;
@@ -80,7 +86,7 @@
         }
         //call function to initialize variables
         init();
-       
+        
         //functions to load car images and set active properties
         redCarUpImage.onload = function () {
 	       redCarUpImage.active=false;
@@ -186,7 +192,7 @@
                 //all allowed up movements
                 else if((redCarUpImage.active==true)&&(redCar.y>40)){
 
-                    if((redCar.x>3)&&(redCar.x<93)){
+                    if((redCar.x>2)&&(redCar.x<93)){
                         redCar.y-=5;
                     }
                 }
@@ -298,6 +304,7 @@
             //spacebar sets startGame value to true to kickstart game
             if(event.keyCode==32){ 
                 startGame=true;
+                tires.play();
                 /*when game is started the red car begins to move automatically at 
                   the same time as the blue car*/
                 redCarRightImage.active=true;
@@ -306,6 +313,7 @@
               //if player presses down arrow, load the sprite facing down
               if(event.keyCode==40) { //down
                     
+                  redCar.y+=5;
                   redCarDownImage.active=true;
                   redCarUpImage.active=false;
                   redCarRightImage.active=false;
@@ -315,6 +323,7 @@
             //if player presses up arrow, load the sprite facing up
               else if(event.keyCode==38){//up
                   
+                  redCar.y-=5;
                   redCarUpImage.active=true;
                   redCarDownImage.active=false;
                   redCarRightImage.active=false;
@@ -324,6 +333,7 @@
             //if player presses right arrow, load the sprite facing right
               else if(event.keyCode==39){//right
 
+                  redCar.x+=5;
                   redCarRightImage.active=true;
                   redCarUpImage.active=false;
                   redCarDownImage.active=false;
@@ -333,6 +343,7 @@
             //if player presses left arrow, load the sprite facing left
               else if(event.keyCode==37){//left
 
+                  redCar.x-=5;
                   redCarLeftImage.active=true;
                   redCarRightImage.active=false;
                   redCarUpImage.active=false;
@@ -341,12 +352,25 @@
  
         });//event listener
         
+        //if cars collide, play horn sound effect
+        var collision = function(){
+            
+            if (blueCar.x < redCar.x + 20 &&
+                    blueCar.x + 20 > redCar.x &&
+                    blueCar.y < redCar.y + 20 &&
+                    blueCar.y + 20 > redCar.y){
+                horn.play();
+            }
+        }
+        
         //function to keep track of how many laps each car has driven and check for winner
         var lapCount = function(){
             
             //if the red car passes the finish line, increment the laps counter    
             if((redCar.x==113)&&((redCar.y>28)&&(redCar.y<105))){
                 laps++;
+                checkpoint.play();
+                
             }
             //if the blue car passes the finish line, increment the blueLaps counter
             if((blueCar.x==113)&&((blueCar.y>28)&&(blueCar.y<105))){
@@ -363,6 +387,7 @@
             //if red car laps is equal to 3 the red car has won the race and the game is over 
             if(laps==3){
                 
+                win.play();
                 //lap count text
                 ctx.fillStyle = "rgb(250, 250, 250)";
                 ctx.font = "50px Helvetica";
@@ -376,6 +401,7 @@
             //or if blue car laps is equal to 3 the blue car has won the race and the game is over 
             else if(blueLaps==3){
                                 
+                lose.play();
                 //lap count text
                 ctx.fillStyle = "rgb(250, 250, 250)";
                 ctx.font = "50px Helvetica";
@@ -392,16 +418,11 @@
           reset();
       }, false);
         
-        /*if reset button is pressed, reload screen, call init function to reset variables and 
-           reset car buttons*/
+        //called by pressing reset button
         var reset = function(){
             
-            //init();
-            document.location.reload(); //reload the page
-//            redCar.x=148;
-//            redCar.y=88;
-//            blueCar.x=148;
-//            blueCar.y=48;
+            document.location.reload(); //reload the page, resets everything back to original values
+
         }
         
       //function to step through game animation        
@@ -412,6 +433,7 @@
           driveRed();
           //call driveBlue method to start movement of blue car
           driveBlue();
+          collision();
           //check/add to the number of laps
           lapCount(); 
           //if the game is not over, animate game by recursively calling step function
