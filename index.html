@@ -48,7 +48,7 @@
         var startGame, gameOver, stopAni;
         var laps, blueLaps;
         var redX, redY, blueX, blueY;
-        var tires, horn, lose, win, checkpoint; //soundfiles
+        var tires, horn, lose, win, checkpoint, skid; //sound variables
               
         //function to initialize functions
         var init = function(){
@@ -76,6 +76,7 @@
             lose = new Audio("sounds/loseboo.mp3");
             win = new Audio("sounds/wincheer.mp3");
             checkpoint = new Audio("sounds/checkpoint.wav");
+            skid = new Audio("sounds/skid.wav")
             //variables to control game start and game over
             startGame=false;
             gameOver=false;
@@ -313,7 +314,6 @@
               //if player presses down arrow, load the sprite facing down
               if(event.keyCode==40) { //down
                     
-                  redCar.y+=5;
                   redCarDownImage.active=true;
                   redCarUpImage.active=false;
                   redCarRightImage.active=false;
@@ -323,7 +323,6 @@
             //if player presses up arrow, load the sprite facing up
               else if(event.keyCode==38){//up
                   
-                  redCar.y-=5;
                   redCarUpImage.active=true;
                   redCarDownImage.active=false;
                   redCarRightImage.active=false;
@@ -333,7 +332,6 @@
             //if player presses right arrow, load the sprite facing right
               else if(event.keyCode==39){//right
 
-                  redCar.x+=5;
                   redCarRightImage.active=true;
                   redCarUpImage.active=false;
                   redCarDownImage.active=false;
@@ -343,7 +341,7 @@
             //if player presses left arrow, load the sprite facing left
               else if(event.keyCode==37){//left
 
-                  redCar.x-=5;
+                  skid.play(); //play sound when car turns left
                   redCarLeftImage.active=true;
                   redCarRightImage.active=false;
                   redCarUpImage.active=false;
